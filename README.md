@@ -115,3 +115,21 @@ process's VA to GPA from `pagemap` is necessary before invoking the module.
 An example of such user space program that end-to-end interacts and successfully retrieves results
 is available under the `test.c` file. The `make` does not deal with `test.c` , so use typical
 `gcc` commands to compile and run and test the program.
+
+## Overall workflow
+
+User space program VA -> Read `pagemap` -> Retrieve GPA
+
+GPA -> Write to `gpa_hpa` module's proc entry
+
+`gpa_hpa` -> Invoke Hyper Call and pass along GPA
+
+Host takes GPA -> Finds Host Virtual Address (HVA) translating to the GPA -> Find HPA from HVA
+
+Pass HPA back to calling module
+
+Module gets results back from the host and makes them available for reading
+
+User space process -> Read proc entry and get HPA back
+
+So overall: HVA -> GPA -> Module -> Host -> HVA -> HPA -> Back to module -> Process reads results
